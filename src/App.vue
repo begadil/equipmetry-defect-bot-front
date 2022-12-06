@@ -15,17 +15,51 @@
       v-model="notificationStatus"
       :timeout="parameters.notification.timeout"
       top
-      right
+      centered
+      dark
+      :class="
+        notificationType
+          ? '__snackbar snackbar-' + notificationType
+          : '__snackbar'
+      "
     >
-      <span v-html="notificationText"></span>
+      <template v-slot:default>
+        <div class="d-flex align-center">
+          <div>
+            <template v-if="notificationType === 'error'">
+              <v-icon color="errorRed" size="20" class="mr-1">
+                $vuetify.icons.alertCircle
+              </v-icon>
+            </template>
+            <template v-else-if="notificationType === 'info'">
+              <v-icon color="primaryDefault" size="20" class="mr-1">
+                $vuetify.icons.alertCircle
+              </v-icon>
+            </template>
+            <template v-else-if="notificationType === 'success'">
+              <v-icon color="successGreen" size="20" class="mr-1">
+                $vuetify.icons.checkCircle
+              </v-icon>
+            </template>
+          </div>
+          <div class="px-3">
+            <div
+              v-html="notificationText"
+              class="txt c-greyscale fs-16 lh-18"
+            ></div>
+          </div>
+        </div>
+      </template>
       <template v-slot:action="{ attrs }">
         <v-btn
-          color="error"
-          text
+          color="primary"
+          icon
           v-bind="attrs"
           @click="notificationStatus = false"
+          small
+          class="mr-2"
         >
-          закрыть
+          <v-icon size="16">mdi-close</v-icon>
         </v-btn>
       </template>
     </v-snackbar>
@@ -44,11 +78,17 @@ moment.locale("ru");
 
 Vue.mixin({
   data: () => ({
-    selectGlobal: {
-      roles: [{ value: "user", text: "Пользователь" }],
-    },
-    formRules: {
-      required: (value) => !!value || "Обязательное поле.",
+    rulesForm: {
+      required: (value) => !!value || "Обязательно",
+      requiredList: (value) => value.length > 0 || "Обязательно",
+      number: (value) => {
+        const pattern = /^(?=.+)(?:[1-9]\d*|0)?(?:\.\d+)?$/;
+        return pattern.test(value) || "Некорректное число";
+      },
+      integer: (value) => {
+        const pattern = /^\d+$/;
+        return pattern.test(value) || "Некорректное число";
+      },
     },
   }),
   methods: {
@@ -79,8 +119,19 @@ Vue.mixin({
     },
   },
   computed: {
-    currentDate() {
-      return moment(new Date()).format("YYYY-MM-DD");
+    user() {
+      if (this.$telegram.initDataUnsafe) {
+        if (this.$telegram.initDataUnsafe.user) {
+          return this.$telegram.initDataUnsafe.user;
+        }
+      }
+      return null;
+    },
+    queryId() {
+      if (this.$telegram.initDataUnsafe) {
+        return this.$telegram.initDataUnsafe.queryId;
+      }
+      return null;
     },
   },
 });
@@ -117,6 +168,9 @@ export default {
     notificationText() {
       return this.$store.getters["notification/text"];
     },
+    notificationType() {
+      return this.$store.getters["notification/type"];
+    },
     notificationStatus: {
       get() {
         return this.$store.getters["notification/status"];
@@ -128,3 +182,26 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+@import "./assets/style/app";
+
+::-webkit-scrollbar {
+  transition: 0.3s all ease;
+  width: 2px;
+  height: 5px;
+}
+
+::-webkit-scrollbar:horizontal {
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3c4858;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3c4368;
+}
+</style>
