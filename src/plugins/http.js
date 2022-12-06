@@ -2,9 +2,7 @@ import axios from "axios";
 import store from "@/store";
 import constants from "@/common/constants";
 
-const restApi = axios.create({
-  baseURL: constants.API_URL,
-});
+const restApi = axios.create();
 
 restApi.interceptors.response.use(
   (response) => response,

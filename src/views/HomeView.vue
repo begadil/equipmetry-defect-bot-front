@@ -297,11 +297,6 @@ export default {
         modal: false,
         selectedElem: [],
       },
-      r: {
-        a: null,
-        req: {},
-        res: {},
-      },
       form: {
         technic: null,
         type_defect: null,
@@ -350,7 +345,7 @@ export default {
         });
       } else {
         this.$api
-          .telegramCreateDefect(`defect2/tg`, {
+          .equipmetryCreateDefect({
             username: this.user ? this.user.username : null,
             technic: this.form.technic,
             type_defect: this.form["type_defect"],
@@ -367,9 +362,23 @@ export default {
                 text: this.$constants.MESSAGE.SUCCESS,
                 type: "success",
               });
-              this.$telegram.sendData(
-                JSON.stringify({ id: response.data.id, title: this.form.title })
-              );
+
+              let res = {
+                id: this.queryId,
+                type: "article",
+                title: "Успешно",
+                input_message_content: {
+                  message_text: `Дефект "${this.form.title}" успешно создан. ID дефекта: ${response.data.id}`,
+                },
+              };
+              this.$api
+                .telegramAnswerWebAppQuery({
+                  web_app_query_id: this.queryId,
+                  result: JSON.stringify(res),
+                })
+                .then(() => {
+                  this.$telegram.close();
+                });
             }
           })
           .catch(() => {
@@ -380,19 +389,14 @@ export default {
   },
   mounted() {
     this.$store.dispatch("loading/show");
-    this.r.req = {
-      username: this.user ? this.user.username : null,
-    };
-    this.r.a = this.queryId;
     this.$api
-      .telegramLoadTechnic({
+      .equipmetryLoadTechnic({
         params: {
           username: this.user ? this.user.username : null,
         },
       })
       .then((response) => {
         if (response.status === 200) {
-          this.r.res = response.data;
           this.handbook.technic = response.data;
           if (this.handbook.technic.length === 1) {
             this.form.technic = this.handbook.technic[0].id;
