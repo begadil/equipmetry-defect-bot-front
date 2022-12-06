@@ -1,6 +1,6 @@
 export default {
-  // API_URL: "https://equipmetry.kz/api/v1/",
-  API_URL: "http://localhost:8000/api/v1/",
+  API_URL: "https://equipmetry.kz/api/v1/",
+  // API_URL: "http://localhost:8000/api/v1/",
   MESSAGE: {
     SUCCESS: "Успешно.",
     ERROR: {
