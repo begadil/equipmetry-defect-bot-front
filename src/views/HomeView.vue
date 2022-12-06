@@ -262,6 +262,9 @@
             </div>
           </v-col>
         </v-row>
+        <pre>
+          {{ r }}
+        </pre>
         <v-footer
           app
           fixed
@@ -293,6 +296,10 @@ export default {
       catalog: {
         modal: false,
         selectedElem: [],
+      },
+      r: {
+        req: {},
+        res: {},
       },
       form: {
         technic: null,
@@ -372,6 +379,9 @@ export default {
   },
   mounted() {
     this.$store.dispatch("loading/show");
+    this.r.req = {
+      username: this.user ? this.user.username : null,
+    };
     this.$api
       .telegramLoadTechnic({
         params: {
@@ -380,6 +390,7 @@ export default {
       })
       .then((response) => {
         if (response.status === 200) {
+          this.r.res = response.data;
           this.handbook.technic = response.data;
           if (this.handbook.technic.length === 1) {
             this.form.technic = this.handbook.technic[0].id;
