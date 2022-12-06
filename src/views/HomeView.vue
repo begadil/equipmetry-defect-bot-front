@@ -383,7 +383,7 @@ export default {
     this.r.req = {
       username: this.user ? this.user.username : null,
     };
-    this.a = this.queryId;
+    this.r.a = this.queryId;
     this.$api
       .telegramLoadTechnic({
         params: {
