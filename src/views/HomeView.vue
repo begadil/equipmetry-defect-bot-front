@@ -26,6 +26,13 @@ export default {
       return null;
     },
   },
+  mounted() {
+    this.$telegram.MainButton.setParams({
+      text: "Создать",
+      is_visible: true,
+      is_active: false,
+    });
+  },
 };
 </script>
 
