@@ -129,7 +129,7 @@ Vue.mixin({
     },
     queryId() {
       if (this.$telegram.initDataUnsafe) {
-        return this.$telegram.initDataUnsafe.queryId;
+        return this.$telegram.initDataUnsafe["query_id"];
       }
       return null;
     },
